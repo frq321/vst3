@@ -1,10 +1,7 @@
 name: Build plugin
 
-# Builds the VST3 for Windows, macOS and Linux and uploads it as a downloadable artifact.
-# Push this folder to a GitHub repository, open the "Actions" tab and download the result.
 on:
   push:
-  pull_request:
   workflow_dispatch:
 
 jobs:
@@ -21,8 +18,7 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install -y libasound2-dev libx11-dev libxrandr-dev libxinerama-dev \
-            libxcursor-dev libxext-dev libfreetype-dev libfontconfig1-dev libgl1-mesa-dev
+          sudo apt-get install -y libasound2-dev libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libxext-dev libfreetype-dev libfontconfig1-dev libgl1-mesa-dev
 
       - name: Configure
         run: cmake -B build -DCMAKE_BUILD_TYPE=Release -DSPATIALPAN_BUILD_TESTS=ON "-DCMAKE_OSX_ARCHITECTURES=arm64;x86_64"
@@ -31,10 +27,10 @@ jobs:
         run: cmake --build build --config Release --target SpatialPan_VST3 --parallel 4
 
       - name: Build and run DSP tests
+        shell: bash
         run: |
           cmake --build build --config Release --target SpatialPanTests --parallel 4
           ctest --test-dir build -C Release --output-on-failure
-        shell: bash
 
       - name: Collect VST3
         shell: bash
